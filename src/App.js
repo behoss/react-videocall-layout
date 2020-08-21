@@ -8,14 +8,8 @@ import { makeStyles, styled } from "@material-ui/core/styles";
 import { Box, Button } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
-  hide: { display: "none" },
   root: { margin: "10px 120px" },
   button: { margin: "0 10px 10px 0" },
-  wrapper: {
-    border: "1px dashed red",
-    position: "relative",
-    overflow: "hidden",
-  },
   flexItemOneCol: { flexBasis: "100%" },
   flexItemTwoCol: {
     flexBasis: "50%",
@@ -26,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   flexItemFourCol: {
     flexBasis: "25%",
   },
-  remoteVideo: {
+  fullWidth: {
     width: "100%",
   },
   localVideo: {
@@ -39,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
     bottom: "15px",
     right: "12px",
   },
-  screensharingVideo: { width: "100%" },
   screensharingVideoContainer: {
     position: "relative",
   },
@@ -72,7 +65,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FlexBoxContainer = styled("div")({
+const ComponentWrapper = styled(Box)({
+  border: "1px dashed red",
+  position: "relative",
+  overflow: "hidden",
+});
+
+const FlexBoxContainer = styled(Box)({
   display: "flex",
   flexFlow: "row wrap",
   justifyContent: "center",
@@ -89,23 +88,17 @@ const App = () => {
     <img
       src="./assets/cyborg.jpg"
       alt="cyborg"
-      className={clsx(classes.localVideo, classes.bottomRightCorner, {
-        [classes.hide]: screensharing,
-      })}
+      className={clsx(classes.localVideo, classes.bottomRightCorner)}
     />
   );
 
-  const LocalVideoClone = cloneElement(LocalVideo, {
-    className: clsx(classes.localVideo, classes.bottomRightCorner, {
-      [classes.hide]: !screensharing,
-    }),
-  });
+  const LocalVideoClone = cloneElement(LocalVideo);
 
   const RemoteVideo = (
     <img
       src="./assets/bugs-bunny-looney-tunes-crop.jpg"
       alt="bugs bunny looney toons"
-      style={{ width: "100%" }}
+      className={classes.fullWidth}
     />
   );
 
@@ -113,7 +106,7 @@ const App = () => {
     <img
       src="./assets/screensharing.png"
       alt="screensharing"
-      className={classes.screensharingVideo}
+      className={classes.fullWidth}
     />
   );
 
@@ -139,7 +132,7 @@ const App = () => {
         <Button
           className={classes.button}
           variant="contained"
-          color="grey"
+          color="default"
           onClick={() => setScreensharing((prevState) => !prevState)}
         >
           Toggle screensharing
@@ -147,20 +140,19 @@ const App = () => {
       </Box>
 
       {/* Videos begin */}
-      <Box className={classes.wrapper}>
+      <ComponentWrapper>
         <FlexBoxContainer>
-          <Box
-            className={clsx(
-              classes.screensharingVideoContainer,
-              classes.flexItemOneCol,
-              {
-                [classes.hide]: !screensharing,
-              },
-            )}
-          >
-            {ScreensharingVideo}
-            {LocalVideoClone}
-          </Box>
+          {screensharing && (
+            <Box
+              className={clsx(
+                classes.screensharingVideoContainer,
+                classes.flexItemOneCol,
+              )}
+            >
+              {ScreensharingVideo}
+              {LocalVideoClone}
+            </Box>
+          )}
 
           {Array.from({ length: addStream }, (_, index) => (
             <Box
@@ -178,8 +170,8 @@ const App = () => {
           ))}
         </FlexBoxContainer>
 
-        {LocalVideo}
-      </Box>
+        {!screensharing && LocalVideo}
+      </ComponentWrapper>
       {/* Videos end */}
 
       <Box className={classes.actionButtons}>Action buttons go here</Box>
